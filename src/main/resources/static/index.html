@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FestPass - College Fest Ticketing</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            color: #1e293b;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #172554, #1e3a8a, #2563eb);
+            color: white;
+            padding: 18px 55px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.25);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: white;
+            color: #1e3a8a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo h1 {
+            font-size: 25px;
+        }
+
+        header span {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Main */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 45px 30px;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb, #4f46e5);
+            color: white;
+            border-radius: 24px;
+            padding: 55px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.25);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            right: -70px;
+            top: -90px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            right: 160px;
+            bottom: -100px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 720px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            line-height: 1.15;
+        }
+
+        .hero p {
+            font-size: 17px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .hero-button {
+            display: inline-block;
+            padding: 13px 22px;
+            background: white;
+            color: #1e3a8a;
+            text-decoration: none;
+            border-radius: 9px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Section title */
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 25px;
+            color: #172554;
+        }
+
+        .section-title p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+            transition: 0.25s;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.12);
+        }
+
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            margin-bottom: 18px;
+        }
+
+        .events-icon {
+            background: #dbeafe;
+        }
+
+        .attendees-icon {
+            background: #dcfce7;
+        }
+
+        .tickets-icon {
+            background: #fef3c7;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            color: #172554;
+            margin-bottom: 9px;
+        }
+
+        .card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 22px;
+            min-height: 50px;
+        }
+
+        .button {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 11px 18px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            background: #1e3a8a;
+            transition: 0.2s;
+        }
+
+        .button:hover {
+            background: #162d6b;
+        }
+
+        /* Bottom info */
+        .info {
+            margin-top: 30px;
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        .info-item h3 {
+            color: #1e3a8a;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .info-item p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            header {
+                padding: 16px 25px;
+            }
+
+            header span {
+                display: none;
+            }
+
+            .container {
+                padding: 25px 18px;
+            }
+
+            .hero {
+                padding: 35px 25px;
+            }
+
+            .hero h2 {
+                font-size: 32px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .info {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">🎟️</div>
+        <h1>FestPass</h1>
+    </div>
+
+    <span>College Fest Management System</span>
+</header>
+
+
+<div class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                ✨ Smart College Fest Management
+            </div>
+
+            <h2>
+                Welcome to FestPass
+            </h2>
+
+            <p>
+                Your complete digital platform for managing college events,
+                registering attendees and issuing secure QR-based tickets.
+            </p>
+
+            <a href="/events.html" class="hero-button">
+                Explore Events →
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- Management Section -->
+    <div class="section-title">
+        <h2>Manage Your Fest</h2>
+        <p>Everything you need to organize your college fest in one place.</p>
+    </div>
+
+
+    <div class="cards">
+
+        <!-- Events -->
+        <div class="card">
+
+            <div class="card-icon events-icon">
+                🎉
+            </div>
+
+            <h3>Events</h3>
+
+            <p>
+                Create and manage college fest events,
+                venues, dates, capacity and ticket prices.
+            </p>
+
+            <a href="/events.html" class="button">
+                Manage Events →
+            </a>
+
+        </div>
+
+
+        <!-- Attendees -->
+        <div class="card">
+
+            <div class="card-icon attendees-icon">
+                👥
+            </div>
+
+            <h3>Attendees</h3>
+
+            <p>
+                Register participants and maintain
+                attendee information securely.
+            </p>
+
+            <a href="/attendees.html" class="button">
+                Manage Attendees →
+            </a>
+
+        </div>
+
+
+        <!-- Tickets -->
+        <div class="card">
+
+            <div class="card-icon tickets-icon">
+                🎟️
+            </div>
+
+            <h3>Digital Tickets</h3>
+
+            <p>
+                Generate unique QR tickets and
+                validate them securely at event entry.
+            </p>
+
+            <a href="/tickets.html" class="button">
+                Manage Tickets →
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Simple Dashboard Information -->
+    <div class="info">
+
+        <div class="info-item">
+            <h3>🎉</h3>
+            <p>Event Management</p>
+        </div>
+
+        <div class="info-item">
+            <h3>👥</h3>
+            <p>Attendee Registration</p>
+        </div>
+
+        <div class="info-item">
+            <h3>🎟️</h3>
+            <p>QR Ticketing</p>
+        </div>
+
+        <div class="info-item">
+            <h3>🔐</h3>
+            <p>Secure Check-in</p>
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+    © 2026 FestPass · College Fest Ticketing System
+</footer>
+
+</body>
+</html>

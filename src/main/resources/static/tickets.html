@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FestPass - Tickets</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 26px;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .top-bar h2 {
+            color: #1e3a8a;
+        }
+
+        .back-button {
+            background: #1e3a8a;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #1e3a8a;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #162d6b;
+        }
+
+        .validate-button {
+            background: #15803d;
+        }
+
+        .validate-button:hover {
+            background: #166534;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            white-space: pre-wrap;
+        }
+
+        .success {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .ticket-details {
+            line-height: 1.8;
+        }
+
+        @media (max-width: 800px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎟️ FestPass</h1>
+    <span>College Fest Ticketing System</span>
+</header>
+
+<div class="container">
+
+    <div class="top-bar">
+        <h2>Manage Tickets</h2>
+        <a href="/index.html" class="back-button">← Back to Home</a>
+    </div>
+
+    <!-- CREATE TICKET -->
+    <div class="card">
+
+        <h3>🎟️ Issue Digital Ticket</h3>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Event ID</label>
+                <input
+                        type="number"
+                        id="eventId"
+                        placeholder="Enter event ID">
+            </div>
+
+            <div>
+                <label>Attendee ID</label>
+                <input
+                        type="number"
+                        id="attendeeId"
+                        placeholder="Enter attendee ID">
+            </div>
+
+        </div>
+
+        <button onclick="purchaseTicket()">
+            Generate Ticket
+        </button>
+
+        <div id="purchaseResult" class="result">
+            Ticket details will appear here.
+        </div>
+
+    </div>
+
+    <!-- VALIDATE TICKET -->
+    <div class="card">
+
+        <h3>🔍 Validate QR Ticket</h3>
+
+        <label>QR Code</label>
+
+        <input
+                type="text"
+                id="qrCode"
+                placeholder="Enter QR code">
+
+        <button
+                class="validate-button"
+                onclick="validateTicket()">
+            Validate Ticket
+        </button>
+
+        <div id="validationResult" class="result">
+            Validation result will appear here.
+        </div>
+
+    </div>
+
+    <!-- GET TICKET -->
+    <div class="card">
+
+        <h3>🔎 Find Ticket</h3>
+
+        <label>Ticket ID</label>
+
+        <input
+                type="number"
+                id="ticketId"
+                placeholder="Enter ticket ID">
+
+        <button onclick="getTicket()">
+            View Ticket
+        </button>
+
+        <div id="ticketResult" class="result">
+            Ticket information will appear here.
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    async function purchaseTicket() {
+
+        const eventId = document.getElementById("eventId").value;
+        const attendeeId = document.getElementById("attendeeId").value;
+        const result = document.getElementById("purchaseResult");
+
+        if (!eventId || !attendeeId) {
+            result.innerHTML =
+                '<span class="error">Please enter Event ID and Attendee ID.</span>';
+            return;
+        }
+
+        try {
+
+            const response = await fetch("/api/tickets", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    eventId: Number(eventId),
+                    attendeeId: Number(attendeeId)
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                result.innerHTML =
+                    '<span class="error">' +
+                    (data.message || "Unable to generate ticket.") +
+                    '</span>';
+                return;
+            }
+
+            result.innerHTML = `
+                <div class="ticket-details">
+                    <span class="success">✓ Ticket generated successfully!</span>
+                    <br><br>
+                    <strong>Ticket ID:</strong> ${data.id}
+                    <br>
+                    <strong>QR Code:</strong> ${data.qrCode}
+                    <br>
+                    <strong>Status:</strong> ${data.status}
+                    <br>
+                    <strong>Price:</strong> ₹${data.price}
+                    <br>
+                    <strong>Issued At:</strong> ${data.issuedAt}
+                </div>
+            `;
+
+            document.getElementById("qrCode").value = data.qrCode;
+
+        } catch (error) {
+
+            result.innerHTML =
+                '<span class="error">Server connection error.</span>';
+        }
+    }
+
+
+    async function validateTicket() {
+
+        const qrCode = document.getElementById("qrCode").value;
+        const result = document.getElementById("validationResult");
+
+        if (!qrCode) {
+            result.innerHTML =
+                '<span class="error">Please enter a QR code.</span>';
+            return;
+        }
+
+        try {
+
+            const response = await fetch("/api/tickets/validate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    qrCode: qrCode
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                result.innerHTML =
+                    '<span class="error">' +
+                    (data.message || "Ticket validation failed.") +
+                    '</span>';
+                return;
+            }
+
+            result.innerHTML = `
+                <div class="ticket-details">
+                    <span class="success">✓ Ticket validated successfully!</span>
+                    <br><br>
+                    <strong>Ticket ID:</strong> ${data.id}
+                    <br>
+                    <strong>Status:</strong> ${data.status}
+                    <br>
+                    <strong>Used At:</strong> ${data.usedAt}
+                </div>
+            `;
+
+        } catch (error) {
+
+            result.innerHTML =
+                '<span class="error">Server connection error.</span>';
+        }
+    }
+
+
+    async function getTicket() {
+
+        const ticketId = document.getElementById("ticketId").value;
+        const result = document.getElementById("ticketResult");
+
+        if (!ticketId) {
+            result.innerHTML =
+                '<span class="error">Please enter Ticket ID.</span>';
+            return;
+        }
+
+        try {
+
+            const response = await fetch("/api/tickets/" + ticketId);
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                result.innerHTML =
+                    '<span class="error">' +
+                    (data.message || "Ticket not found.") +
+                    '</span>';
+                return;
+            }
+
+            result.innerHTML = `
+                <div class="ticket-details">
+                    <strong>Ticket ID:</strong> ${data.id}
+                    <br>
+                    <strong>QR Code:</strong> ${data.qrCode}
+                    <br>
+                    <strong>Status:</strong> ${data.status}
+                    <br>
+                    <strong>Price:</strong> ₹${data.price}
+                    <br>
+                    <strong>Issued At:</strong> ${data.issuedAt}
+                    <br>
+                    <strong>Used At:</strong> ${data.usedAt || "Not used"}
+                </div>
+            `;
+
+        } catch (error) {
+
+            result.innerHTML =
+                '<span class="error">Server connection error.</span>';
+        }
+    }
+
+</script>
+
+</body>
+</html>
